@@ -11,11 +11,11 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexComponent
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.upload.Upload
+import com.vaadin.flow.component.upload.*
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 
 class UploadFile(
-    importTransactionUseCase: ImportTransactionUseCase,
+    private val importTransactionUseCase: ImportTransactionUseCase,
 ) : VerticalLayout() {
     var buffer = MemoryBuffer()
     val grid = Grid(ImportHistory::class.java, false)
@@ -25,8 +25,8 @@ class UploadFile(
         setWidthFull()
 
         val importarLabel = H1("IMPORTAR TRANSAÇÕES")
-
         add(importarLabel)
+
         val upload = Upload(buffer)
 
         upload.isDropAllowed = true
@@ -36,30 +36,13 @@ class UploadFile(
         upload.dropLabel = Label("Arraste e solte o arquivo aqui")
         upload.uploadButton = Button("Escolher arquivo")
 
-        upload.addFileRejectedListener {
-            val notification = Notification.show("File type not accepted")
-            notification.addThemeVariants(NotificationVariant.LUMO_ERROR)
-            notification.position = Notification.Position.BOTTOM_CENTER
-        }
-
-        upload.addSucceededListener {
-            updateGridContent(importTransactionUseCase.processFileAndSaveToDatabase(buffer.inputStream))
-
-            val notification = Notification.show("Arquivo " + it.fileName + " processado com sucesso")
-            notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
-            notification.position = Notification.Position.BOTTOM_CENTER
-        }
-
-        upload.addAllFinishedListener {
-            upload.clearFileList()
-            buffer = MemoryBuffer()
-            upload.receiver = buffer
-        }
+        upload.addFileRejectedListener(this::fileRejectListener)
+        upload.addSucceededListener(this::uploadSucceedListener)
+        upload.addAllFinishedListener(this::uploadAllFinished)
 
         add(upload)
 
         val importacoesRealizadasLabel = H1("IMPORTAÇÕES REALIZADAS")
-
         add(importacoesRealizadasLabel)
 
         grid.setWidthFull()
@@ -77,5 +60,25 @@ class UploadFile(
 
     fun updateGridContent(importHistory: List<ImportHistory>) {
         grid.setItems(importHistory)
+    }
+
+    fun fileRejectListener(event: FileRejectedEvent) {
+        val notification = Notification.show("Tipo de arquivo não suportado")
+        notification.addThemeVariants(NotificationVariant.LUMO_ERROR)
+        notification.position = Notification.Position.BOTTOM_CENTER
+    }
+
+    fun uploadSucceedListener(event: SucceededEvent) {
+        updateGridContent(importTransactionUseCase.processFileAndSaveToDatabase(buffer.inputStream))
+
+        val notification = Notification.show("Arquivo " + event.fileName + " processado com sucesso")
+        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS)
+        notification.position = Notification.Position.BOTTOM_CENTER
+    }
+
+    fun uploadAllFinished(event: AllFinishedEvent) {
+        event.source.clearFileList()
+        buffer = MemoryBuffer()
+        event.source.receiver = buffer
     }
 }
