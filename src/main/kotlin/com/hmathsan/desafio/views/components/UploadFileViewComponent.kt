@@ -14,7 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout
 import com.vaadin.flow.component.upload.*
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 
-class UploadFile(
+class UploadFileViewComponent(
     private val importTransactionUseCase: ImportTransactionUseCase,
 ) : VerticalLayout() {
     var buffer = MemoryBuffer()

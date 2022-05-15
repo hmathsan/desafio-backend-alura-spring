@@ -5,10 +5,7 @@ import org.hibernate.Hibernate
 import org.hibernate.annotations.GenericGenerator
 import java.time.LocalDateTime
 import java.util.*
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
 data class Transaction (
@@ -16,7 +13,7 @@ data class Transaction (
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "id", columnDefinition = "VARCHAR(255)")
-    val id: UUID?,
+    val id: String?,
     @field:NotNull
     val bancoOrigem: String,
     @field:NotNull
@@ -32,7 +29,10 @@ data class Transaction (
     @field:NotNull
     val valorTransacao: Double,
     @field:NotNull
-    val dataHoraTransacao: LocalDateTime
+    val dataHoraTransacao: LocalDateTime,
+    @field:NotNull
+    @ManyToOne
+    val importadoPor: User
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

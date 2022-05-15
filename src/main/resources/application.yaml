@@ -15,3 +15,9 @@ spring:
     restart:
       quiet-period: 1s
       poll-interval: 2s
+
+default:
+  user:
+    email: admin@email.com.br
+    name: Admin
+    password: 123999

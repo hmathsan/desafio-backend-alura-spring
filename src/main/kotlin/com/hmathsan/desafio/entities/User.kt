@@ -1,15 +1,16 @@
 package com.hmathsan.desafio.entities
 
-import com.hmathsan.desafio.model.ImportHistory
+import com.hmathsan.desafio.model.Roles
 import org.hibernate.Hibernate
 import org.hibernate.annotations.GenericGenerator
-import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
+import javax.validation.constraints.Email
 import javax.validation.constraints.NotNull
 
 @Entity
-data class TransactionImportHistory(
+@Table(name = "user_entity")
+data class User(
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "org.hibernate.id.UUIDGenerator")
@@ -17,31 +18,31 @@ data class TransactionImportHistory(
     val id: String?,
 
     @field:NotNull
-    val dataImportacao: LocalDateTime,
+    val name: String,
 
     @field:NotNull
-    val dataTransacao: LocalDateTime,
+    @field:Email
+    val email: String,
 
     @field:NotNull
-    @ManyToOne
-    val transaction: Transaction
+    val password: String,
+
+    @field:NotNull
+    @field:Enumerated(EnumType.STRING)
+    val role: Roles
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-        other as TransactionImportHistory
+        other as User
 
-        return id != null && id == other.id
+        return id == other.id
     }
 
     override fun hashCode(): Int = javaClass.hashCode()
 
     @Override
     override fun toString(): String {
-        return this::class.simpleName + "(id = $id , dataImportacao = $dataImportacao , dataTransacao = $dataTransacao )"
-    }
-
-    fun toModel() : ImportHistory {
-        return ImportHistory(dataTransacao, dataImportacao)
+        return this::class.simpleName + "(id = $id , name = $name , email = $email , role = $role )"
     }
 }

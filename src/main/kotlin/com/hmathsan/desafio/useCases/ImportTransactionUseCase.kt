@@ -5,17 +5,20 @@ import com.hmathsan.desafio.entities.TransactionImportHistory
 import com.hmathsan.desafio.model.ImportHistory
 import com.hmathsan.desafio.repositories.TransactionImportHistoryRepository
 import com.hmathsan.desafio.repositories.TransactionRepository
+import com.hmathsan.desafio.services.SecurityService
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import javax.naming.AuthenticationException
 
 @Service
 class ImportTransactionUseCase(
     private val transactionRepository: TransactionRepository,
-    private val transactionImportHistoryRepository: TransactionImportHistoryRepository
+    private val transactionImportHistoryRepository: TransactionImportHistoryRepository,
+    private val securityService: SecurityService
 ) {
     fun processFileAndSaveToDatabase(inputStream: InputStream) : List<ImportHistory> {
         val reader = BufferedReader(InputStreamReader(inputStream))
@@ -23,6 +26,9 @@ class ImportTransactionUseCase(
 
         //2022-01-01T07:30:00
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+
+        val authenticatedUser = securityService.getAuthenticatedUser()
+            ?: throw AuthenticationException("User not authenticated")
 
         while(reader.ready()) {
             val line = reader.readLine().split(",")
@@ -47,7 +53,8 @@ class ImportTransactionUseCase(
                 agenciaDestino,
                 contaDestino,
                 valorTransacao,
-                dataHoraTransacao
+                dataHoraTransacao,
+                authenticatedUser
             )
 
             transactionRepository.save(transaction)
