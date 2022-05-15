@@ -22,7 +22,8 @@ class ImportTransactionUseCase(
 ) {
     fun processFileAndSaveToDatabase(inputStream: InputStream) : List<ImportHistory> {
         val reader = BufferedReader(InputStreamReader(inputStream))
-        val transactionHistory: MutableList<TransactionImportHistory> = mutableListOf()
+        val transactions: MutableList<Transaction> = mutableListOf()
+        val transactionDate: LocalDateTime
 
         //2022-01-01T07:30:00
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
@@ -53,17 +54,23 @@ class ImportTransactionUseCase(
                 agenciaDestino,
                 contaDestino,
                 valorTransacao,
-                dataHoraTransacao,
-                authenticatedUser
+                dataHoraTransacao
             )
 
             transactionRepository.save(transaction)
-            transactionHistory.add(
-                TransactionImportHistory(null, LocalDateTime.now(), dataHoraTransacao, transaction)
-            )
+            transactions.add(transaction)
         }
 
-        transactionImportHistoryRepository.saveAll(transactionHistory)
+        transactionDate = transactions.first().dataHoraTransacao
+        val transactionHistory = TransactionImportHistory(
+            null,
+            LocalDateTime.now(),
+            transactionDate,
+            transactions,
+            authenticatedUser
+        )
+
+        transactionImportHistoryRepository.save(transactionHistory)
         return transactionImportHistoryRepository.findAll()
             .map(TransactionImportHistory::toModel)
     }

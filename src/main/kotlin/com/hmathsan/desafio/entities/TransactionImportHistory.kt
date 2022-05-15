@@ -23,8 +23,12 @@ data class TransactionImportHistory(
     val dataTransacao: LocalDateTime,
 
     @field:NotNull
+    @OneToMany
+    val transaction: List<Transaction>,
+
+    @field:NotNull
     @ManyToOne
-    val transaction: Transaction
+    val importadoPor: User
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

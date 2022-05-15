@@ -29,10 +29,7 @@ data class Transaction (
     @field:NotNull
     val valorTransacao: Double,
     @field:NotNull
-    val dataHoraTransacao: LocalDateTime,
-    @field:NotNull
-    @ManyToOne
-    val importadoPor: User
+    val dataHoraTransacao: LocalDateTime
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
