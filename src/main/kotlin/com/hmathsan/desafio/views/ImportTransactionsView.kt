@@ -22,7 +22,7 @@ class ImportTransactionsView(
         val verticalLayout = VerticalLayout()
         verticalLayout.add(uploadFile)
 
-        verticalLayout.maxWidth = "85%"
+        verticalLayout.maxWidth = "75%"
 
         add(verticalLayout)
 

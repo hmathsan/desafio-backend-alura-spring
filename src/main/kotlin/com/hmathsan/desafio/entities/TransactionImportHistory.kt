@@ -7,6 +7,7 @@ import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
 import javax.validation.constraints.NotNull
+import kotlin.collections.HashSet
 
 @Entity
 data class TransactionImportHistory(
@@ -23,7 +24,7 @@ data class TransactionImportHistory(
     val dataTransacao: LocalDateTime,
 
     @field:NotNull
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
     val transaction: List<Transaction>,
 
     @field:NotNull
@@ -46,6 +47,6 @@ data class TransactionImportHistory(
     }
 
     fun toModel() : ImportHistory {
-        return ImportHistory(dataTransacao, dataImportacao)
+        return ImportHistory(this.id!!, this.dataTransacao.toLocalDate(), dataImportacao)
     }
 }
