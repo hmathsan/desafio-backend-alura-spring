@@ -6,4 +6,5 @@ import java.util.*
 
 interface UserRepository : JpaRepository<User, String> {
     fun findByEmail(email: String): Optional<User>
+    fun findByIsDeletedFalseAndEmailIsNot(email: String): List<User>
 }

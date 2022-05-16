@@ -23,7 +23,9 @@ class CustomAuthenticationProvider(
         if (user.isEmpty) {
             throw BadCredentialsException("Authentication failed")
         } else {
-            if (BCryptPasswordEncoder().matches(password, user.get().password)) {
+            if (user.get().isDeleted){
+                throw BadCredentialsException("Authentication failed")
+            } else if (BCryptPasswordEncoder().matches(password, user.get().password)) {
                 return UsernamePasswordAuthenticationToken(user.get(), password, mutableListOf())
             } else {
                 throw BadCredentialsException("Authentication failed")

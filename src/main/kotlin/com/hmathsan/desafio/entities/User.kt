@@ -29,7 +29,10 @@ data class User(
 
     @field:NotNull
     @field:Enumerated(EnumType.STRING)
-    val role: Roles
+    val role: Roles,
+
+    @field:NotNull
+    var isDeleted: Boolean = false
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

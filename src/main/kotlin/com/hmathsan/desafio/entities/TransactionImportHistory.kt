@@ -24,7 +24,7 @@ data class TransactionImportHistory(
     val dataTransacao: LocalDateTime,
 
     @field:NotNull
-    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.ALL])
+    @OneToMany(fetch = FetchType.EAGER, cascade = [CascadeType.MERGE])
     val transaction: List<Transaction>,
 
     @field:NotNull

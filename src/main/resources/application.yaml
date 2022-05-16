@@ -15,6 +15,15 @@ spring:
     restart:
       quiet-period: 1s
       poll-interval: 2s
+  mail:
+    host: localhost
+    port: 25
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: false
+          auth: false
 
 default:
   user:
